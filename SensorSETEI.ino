@@ -1,13 +1,8 @@
-//#include <DHCP.h>
-//#include <DNS.h>
-//#include <EthernetClient.h>
-//#include <EthernetServer.h>
-//#include <EthernetUDP.h>
-#include <Ethernet_W5500.h>
+//#include <Ethernet_W5500.h>
 //#include <Twitter.h>
 //#include <util.h>
 
-//#include <Ethernet.h> //para primeira geracao do shield ethernet]
+#include <Ethernet.h> //para primeira geracao do shield ethernet]
 // alterada a informação da biblioteca da placa de rede
 
 #include <SD.h>
@@ -16,16 +11,15 @@
 //
 // É necessario informar o MacAddress e o IP da placa de rede
 //
-
-byte mac[] = { 0x70, 0xB3, 0xD5, 0x0A, 0xC1, 0x55 };  
+byte mac[] = { 0x90, 0xA2, 0xDA, 0x0E, 0xB2, 0xDF };   // placa de Rede original Arduino
+//byte mac[] = { 0x70, 0xB3, 0xD5, 0x0A, 0xC1, 0x55 };   // placa de Rede Robocore
 IPAddress ip(172, 16, 11, 13);
 EthernetServer server(80);
-IPAddress gateway( 172, 16, 5, 7);
-IPAddress subnet( 255, 255, 0, 0 );
 
+    
 File webFile;
 
-#define REQ_BUF_SZ    45
+#define REQ_BUF_SZ    40
 char HTTP_req[REQ_BUF_SZ] = { 0 };
 char req_index = 0;
 
@@ -43,14 +37,12 @@ void setup() {
   pinMode(carga1, OUTPUT);
   analogReference(INTERNAL);
 
-  //Ethernet.begin(mac, ip); Adicionado o gateway e subnet
-  Ethernet.begin(mac, ip, gateway, gateway, subnet);
-  
+  Ethernet.begin(mac, ip);
   server.begin();
 
   Serial.begin(9600);
 
-  Serial.println("Inicializando cartao MicroSD - sensorSetei");
+  Serial.println("Inicializando cartao MicroSD - sensorLn");
   if (!SD.begin(4)) {
     Serial.println("ERRO - iniciallizacao do cartao falhou!");
     return;
@@ -84,10 +76,7 @@ void loop() {
           client.println("HTTP/1.1 200 OK");
           client.println("Content-Type: text/html");
           client.println("Connection: close");
-
-          
-          client.println("Refresh: 10");  // refresh the page automatically every 5 sec   
-          
+        //  client.println("Refresh: 10");  // refresh the page automatically every 5 sec   
           client.println();
 
           if (StrContains(HTTP_req, "ajax_LerDados")) {
@@ -123,9 +112,8 @@ void loop() {
       }
     }
 
-    delay(5);
-    client.stop();  
-   // Serial.println("client disconnected");  comentado para que não apareça no terminal
+    delay(1);
+    client.stop();
 
   }
 
